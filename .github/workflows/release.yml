@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    branches:
+    - "release/*"
+
+env:
+  BASE_NAME: NDigester
+  EXE_NAME: ndigester
+  PROJECT_PATH: src/NDigester/NDigester.csproj
+  CONFIGURATION: Release
+  DOTNET_VERSION: 7.*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set version
+      id: environments
+      run: |
+        branch_name=${{ github.ref_name }}
+        split=(${branch_name//// })
+        version=${split[1]}
+        echo "Version: $version"
+        echo "version=${version}" >> $GITHUB_OUTPUT
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore /p:Version=${{ steps.environments.outputs.version }}
+
+    - name: Publish for Windows
+      run: |
+        dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.CONFIGURATION }} --runtime win-x64 --output ./artifacts/win-x64/ -p:PublishSingleFile=true -p:PublishReadyToRun=true /p:Version=${{ steps.environments.outputs.version }} --self-contained true --verbosity diagnostic
+
+    - name: Publish for macOS
+      run: dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.CONFIGURATION }} --runtime osx-x64 --output ./artifacts/osx-x64/ -p:PublishSingleFile=true -p:PublishReadyToRun=true /p:Version=${{ steps.environments.outputs.version }} --self-contained true --verbosity diagnostic
+
+    - name: Publish for Linux
+      run: dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.CONFIGURATION }} --runtime linux-x64 --output ./artifacts/linux-x64/ -p:PublishSingleFile=true -p:PublishReadyToRun=true /p:Version=${{ steps.environments.outputs.version }} --self-contained true --verbosity diagnostic
+
+    - name: Archive
+      run: |
+        zip -r ${{ env.BASE_NAME }}-win-x64.zip ./artifacts/win-x64/${{ env.EXE_NAME }}.exe
+        zip -r ${{ env.BASE_NAME }}-osx-x64.zip ./artifacts/osx-x64/${{ env.EXE_NAME }}
+        zip -r ${{ env.BASE_NAME }}-linux-x64.zip ./artifacts/linux-x64/${{ env.EXE_NAME }}
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Ver.${{ steps.environments.outputs.version }}
+        tag_name: v${{ steps.environments.outputs.version }}
+        files: |
+          ${{ env.BASE_NAME }}-win-x64.zip
+          ${{ env.BASE_NAME }}-osx-x64.zip
+          ${{ env.BASE_NAME }}-linux-x64.zip
