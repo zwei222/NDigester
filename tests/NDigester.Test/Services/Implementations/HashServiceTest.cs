@@ -17,15 +17,15 @@ public class HashServiceTest
     }
 
     [Theory(DisplayName = "Hash test")]
-    [InlineData(HashAlgorithm.MD5, "92a864c81117d9d44e8e425beec7fb2b")]
-    [InlineData(HashAlgorithm.SHA1, "709397c236215a7bb8667546249eef0c58081399")]
-    [InlineData(HashAlgorithm.SHA256, "248cd683e6dfaaf8aace50cbe4c673111820bb26545e60eea1290056c9557eb1")]
-    [InlineData(HashAlgorithm.SHA384, "b98e991c2e0df3023dd2b7717cde53ba277a31092d17d175d02120ac76ebd891c4467346420def00a08aa700441a305d")]
-    [InlineData(HashAlgorithm.SHA512, "f7e611082472e9695ca4135814e45c82bbd5035fb6ceb244ed4a5bc199f47cae42c73b5edfa7b1fe7bf72f0462dbf406ea8918b2af8270ede54663738c41297a")]
-    [InlineData(HashAlgorithm.XxHash32, "c11cb0ab")]
-    [InlineData(HashAlgorithm.XxHash64, "d7f9ed92086efd36")]
-    [InlineData(HashAlgorithm.XxHash3, "78c460dcba1226cc")]
-    [InlineData(HashAlgorithm.XxHash128, "5581408ded4f7e3578c460dcba1226cc")]
+    [InlineData(HashAlgorithm.MD5, "b5adc7195f55640db1a983130705f0e2")]
+    [InlineData(HashAlgorithm.SHA1, "7df0e377c46e2f18cb0b1ee3083d3de5d4fe265c")]
+    [InlineData(HashAlgorithm.SHA256, "c07491defe6f75fa3a0abcd454607768a1e3176a22f47624a23d61ac425e359f")]
+    [InlineData(HashAlgorithm.SHA384, "c27d06484d21a7842b057166939ba18d44ba84f12e15684f022877d94a45cfd8d5fef71c38e145bf264ada4c725339ec")]
+    [InlineData(HashAlgorithm.SHA512, "3fbdd45ce9d5aaf652072c39e23e2eaf35b0fe5cd8ee97a2b60717023d2ba8fdd52c6640a404f8114edf8bbadc2da7e6ddb3b3346ee824b840434e9bdb7e3d95")]
+    [InlineData(HashAlgorithm.XxHash32, "58906e01")]
+    [InlineData(HashAlgorithm.XxHash64, "a597d5073c8d02a5")]
+    [InlineData(HashAlgorithm.XxHash3, "264b10b4067f3274")]
+    [InlineData(HashAlgorithm.XxHash128, "7d1249808b3f7cc4264b10b4067f3274")]
     public async Task HashTest(HashAlgorithm algorithm, string expected)
     {
         var actual = await this.hashService.GetHashAsync(SampleFilePath, algorithm);
