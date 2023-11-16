@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace NDigester.Services;
+﻿namespace NDigester.Services;
 
 public interface IHashService
 {

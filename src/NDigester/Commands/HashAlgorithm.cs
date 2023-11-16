@@ -15,4 +15,12 @@ public enum HashAlgorithm
     SHA384 = 5,
 
     SHA512 = 6,
+
+    XxHash32 = 7,
+
+    XxHash64 = 8,
+
+    XxHash3 = 9,
+
+    XxHash128 = 10,
 }

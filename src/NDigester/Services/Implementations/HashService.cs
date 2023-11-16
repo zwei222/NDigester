@@ -1,10 +1,7 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
+﻿using System.Buffers;
+using System.IO.Hashing;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NDigester.Services.Implementations;
 
@@ -50,6 +47,14 @@ public sealed class HashService : IHashService
             Commands.HashAlgorithm.SHA384 => await this.WriteSha384HashAsync(stream, buffer, cancellationToken)
                 .ConfigureAwait(false),
             Commands.HashAlgorithm.SHA512 => await this.WriteSha512HashAsync(stream, buffer, cancellationToken)
+                .ConfigureAwait(false),
+            Commands.HashAlgorithm.XxHash32 => await this.WriteXxHash32HashAsync(stream, buffer, cancellationToken)
+                .ConfigureAwait(false),
+            Commands.HashAlgorithm.XxHash64 => await this.WriteXxHash64HashAsync(stream, buffer, cancellationToken)
+                .ConfigureAwait(false),
+            Commands.HashAlgorithm.XxHash3 => await this.WriteXxHash3HashAsync(stream, buffer, cancellationToken)
+                .ConfigureAwait(false),
+            Commands.HashAlgorithm.XxHash128 => await this.WriteXxHash128HashAsync(stream, buffer, cancellationToken)
                 .ConfigureAwait(false),
             _ => throw new NotSupportedException(),
         };
@@ -120,6 +125,54 @@ public sealed class HashService : IHashService
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async ValueTask<int> WriteXxHash32HashAsync(
+        Stream stream,
+        Memory<byte> buffer,
+        CancellationToken cancellationToken)
+    {
+        var xxHash32 = new XxHash32();
+
+        await xxHash32.AppendAsync(stream, cancellationToken).ConfigureAwait(false);
+        return xxHash32.GetHashAndReset(buffer.Span);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async ValueTask<int> WriteXxHash64HashAsync(
+        Stream stream,
+        Memory<byte> buffer,
+        CancellationToken cancellationToken)
+    {
+        var xxHash64 = new XxHash64();
+
+        await xxHash64.AppendAsync(stream, cancellationToken).ConfigureAwait(false);
+        return xxHash64.GetHashAndReset(buffer.Span);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async ValueTask<int> WriteXxHash3HashAsync(
+        Stream stream,
+        Memory<byte> buffer,
+        CancellationToken cancellationToken)
+    {
+        var xxHash3 = new XxHash3();
+
+        await xxHash3.AppendAsync(stream, cancellationToken).ConfigureAwait(false);
+        return xxHash3.GetHashAndReset(buffer.Span);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async ValueTask<int> WriteXxHash128HashAsync(
+        Stream stream,
+        Memory<byte> buffer,
+        CancellationToken cancellationToken)
+    {
+        var xxHash128 = new XxHash128();
+
+        await xxHash128.AppendAsync(stream, cancellationToken).ConfigureAwait(false);
+        return xxHash128.GetHashAndReset(buffer.Span);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int GetBufferSize(Commands.HashAlgorithm algorithm)
     {
         return algorithm switch
@@ -129,6 +182,10 @@ public sealed class HashService : IHashService
             Commands.HashAlgorithm.SHA256 => 32,
             Commands.HashAlgorithm.SHA384 => 48,
             Commands.HashAlgorithm.SHA512 => 64,
+            Commands.HashAlgorithm.XxHash32 => 4,
+            Commands.HashAlgorithm.XxHash64 => 8,
+            Commands.HashAlgorithm.XxHash3 => 8,
+            Commands.HashAlgorithm.XxHash128 => 16,
             _ => throw new ArgumentException(nameof(algorithm)),
         };
     }
