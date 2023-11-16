@@ -1,0 +1,16 @@
+﻿<Project>
+  <Import Project="..\Directory.Build.props" />
+
+  <PropertyGroup>
+    <AnalysisMode>Default</AnalysisMode>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageVersion>0.1.0</PackageVersion>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/zwei222/NDigester.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zwei222/NDigester</PackageProjectUrl>
+    <Authors>zwei_222</Authors>
+  </PropertyGroup>
+
+</Project>
